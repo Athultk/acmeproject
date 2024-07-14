@@ -1,0 +1,11 @@
+pandas
+numpy
+scikit-learn
+joblib
+matplotlib
+seaborn
+dash
+dash-core-components
+dash-html-components
+openpyxl
+-e .
