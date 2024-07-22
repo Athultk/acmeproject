@@ -4,10 +4,8 @@
 The project involves using three key datasets provided by Acme—task features, supplier characteristics, and a cost database—to build a machine learning model that can accurately predict and select the most cost-effective supplier. The model's success will be gauged by its error in predicting the cost of the chosen supplier compared to the actual lowest-cost supplier, with performance evaluated using root mean squared error (RMSE). The aim is to integrate machine learning concepts with practical business needs to improve cost estimation and supplier selection, thereby boosting operational efficiency and decision-making.
 
 ## Directory Structure
-
-
-                
 acmeproject/
+
     data/
         ── raw/
             ├── suppliers.csv
