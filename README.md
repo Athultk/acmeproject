@@ -296,13 +296,18 @@ To run the application, execute the script. The Dash server will start, and you 
 All scripts were equally contributed to by all three authors except for the ones mentioned below:
 
 Athul Thattarkandy - Script: 3_mlmodel.py
-Hongyi Yu - Script: 5_hyper.py
+
+Hongyi Yu - Script: 5_hyper.py;
+
 Mert Ceylan - Script: 4_cross_validation.py
 
 Special thanks to our Professor Yanfei Shan for the support and contributions.
 
 ## Contact_Information
 For inquiries, please contact:
+
 Athul Thattarkandy: athul.thattarkandy@tum.de
+
 Hongyi Yu - hongyi.yu@tum.de
+
 Mert Ceylan - mert.ceylan@tum.de
