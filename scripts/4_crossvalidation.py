@@ -10,9 +10,9 @@ from sklearn.metrics import make_scorer
 
 # Define the file paths for the datasets
 scripts_dir = os.path.dirname(__file__)
-scaled_tasks_file_path = os.path.join(scripts_dir, '..', 'data', 'scaled', 'tasks_scaled.xlsx')
+scaled_tasks_file_path = os.path.join(scripts_dir, '..', 'data', '3_scaled', 'tasks_scaled.xlsx')
 costs_file_path = os.path.join(scripts_dir, '..', 'data', 'raw', 'cost.csv')
-top_suppliers_file_path = os.path.join(scripts_dir, '..', 'data', 'topsuppliers', 'Top_20_suppliers.csv')
+top_suppliers_file_path = os.path.join(scripts_dir, '..', 'data', '4_topsuppliers', 'Top_20_suppliers.csv')
 
 # Load the datasets
 tasks_df = pd.read_excel(scaled_tasks_file_path)

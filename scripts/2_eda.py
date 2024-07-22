@@ -11,9 +11,9 @@ matplotlib.use('Agg')
 
 # Define the file paths for the datasets
 scripts_dir = os.path.dirname(__file__)
-scaled_tasks_file_path = os.path.join(scripts_dir, '..', 'data', 'scaled', 'tasks_scaled.xlsx')
+scaled_tasks_file_path = os.path.join(scripts_dir, '..', 'data', '3_scaled', 'tasks_scaled.xlsx')
 costs_file_path = os.path.join(scripts_dir, '..', 'data', 'raw', 'cost.csv')
-top_suppliers_file_path = os.path.join(scripts_dir, '..', 'data', 'topsuppliers', 'Top_20_suppliers.csv')
+top_suppliers_file_path = os.path.join(scripts_dir, '..', 'data', '4_topsuppliers', 'Top_20_suppliers.csv')
 
 # Load the datasets
 tasks_df = pd.read_excel(scaled_tasks_file_path)
@@ -22,8 +22,9 @@ suppliers_df = pd.read_csv(top_suppliers_file_path)
 
 # STEP 2.1
 '''
-Multiple Figures for Boxplots of Task Features
-To create one figure (using boxplots) that shows the distribution of feature values for eachtask
+Generates multiple figures, each containing boxplots, to show the distribution of feature values for each task. 
+Splits features into chunks of 21 per figure and saves each figure as a PNG file. Uses `sns.boxplot` for visualization 
+and handles file saving with error checking.
 '''
 
 # Remove the Task ID column for plotting
@@ -51,14 +52,23 @@ for i in range(num_figures):
     
     # Save each figure with a unique filename
     save_path = os.path.join(save_dir, f'task_features_distribution_{i + 1}.png')
-    plt.savefig(save_path)
+    # Delete the file if it exists
+    if os.path.exists(save_path):
+        os.remove(save_path)
+    try:
+        plt.savefig(save_path)
+        print(f"Saved: {save_path}")
+    except Exception as e:
+        print(f"Error saving {save_path}: {e}")
     plt.close()
 
 print("Boxplots of Task Features are saved")
 
 # STEP 2.2
 '''
-Distribution of Errors for Each Supplier with RMSE Annotation
+Computes and visualizes the distribution of errors for each supplier, annotated with RMSE values. Generates multiple 
+figures, each containing boxplots of errors with RMSE annotations for subsets of suppliers. Uses `sns.boxplot` for 
+visualization and handles file saving with error checking.
 '''
 
 # Compute the error for each supplier and task
@@ -67,8 +77,16 @@ costs_pivot = costs_df.pivot(index='Task ID', columns='Supplier ID', values='Cos
 min_costs = costs_pivot.min(axis=1)
 errors_df = costs_pivot.sub(min_costs, axis=0)
 
+# Print errors for each supplier
+print("Errors for each supplier and task:")
+print(errors_df)
+
 # Calculate RMSE for each supplier
 rmse_values = np.sqrt((errors_df ** 2).mean(axis=0))
+
+# Print RMSE values
+print("\nRMSE values for each supplier:")
+print(rmse_values)
 
 # Number of suppliers per figure
 suppliers_per_figure = 22
@@ -98,14 +116,22 @@ for i in range(num_supplier_figures):
 
     # Save each figure with a unique filename
     save_path = os.path.join(save_dir, f'supplier_errors_with_rmse_{i + 1}.png')
-    plt.savefig(save_path)
+    # Delete the file if it exists
+    if os.path.exists(save_path):
+        os.remove(save_path)
+    try:
+        plt.savefig(save_path)
+        print(f"Saved: {save_path}")
+    except Exception as e:
+        print(f"Error saving {save_path}: {e}")
     plt.close()
 
 print("Boxplots of supplier errors are saved")
 
 # STEP 2.3
 '''
-To create a heatmap plot that shows the cost values as a matrix of tasks (rows) and suppliers (columns).
+Creates and saves a heatmap plot showing cost values as a matrix of tasks (rows) and suppliers (columns). 
+Uses `sns.heatmap` for visualization and handles file saving with error checking.
 '''
 
 # Create a heatmap of cost values
@@ -119,7 +145,14 @@ plt.tight_layout()
 
 # Save the figure
 save_path = os.path.join(save_dir, f'cost_values_heatmap.png')
-plt.savefig(save_path)
+# Delete the file if it exists
+if os.path.exists(save_path):
+    os.remove(save_path)
+try:
+    plt.savefig(save_path)
+    print(f"Saved: {save_path}")
+except Exception as e:
+    print(f"Error saving {save_path}: {e}")
 plt.close()
 
 print("Heatmap of cost values is saved")

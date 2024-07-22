@@ -4,17 +4,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
+# os.chdir("../")
+# from src.logger import logging
+# from src.exception import error_message_detail
+
 # STEP 1.1
 '''
-Verify that there are no missing values, that the IDs in all data sets provided match, and count the number 
-of tasks, suppliers, features and cost values in all data sets. Remove tasks which are not having any costs.
+Verify there are no missing values, ensure IDs match across datasets, and count the number of tasks, 
+suppliers, features, and cost values. Remove tasks with missing cost values and save the filtered dataset.
 ''' 
 
 # Load the datasets
 scripts_dir = os.path.dirname(__file__)
 
 # Construct the path to the files
-tasks_file_path = os.path.join(scripts_dir, '..', 'data', 'formatted', 'tasks_formatted.xlsx')
+tasks_file_path = os.path.join(scripts_dir, '..', 'data', '0_formatted', 'tasks_formatted.xlsx')
 costs_file_path = os.path.join(scripts_dir, '..', 'data', 'raw', 'cost.csv')
 suppliers_file_path = os.path.join(scripts_dir, '..', 'data', 'raw', 'suppliers.csv')
 
@@ -66,7 +70,7 @@ tasks_removed = tasks_df[~tasks_df['Task ID'].isin(cost_task_ids)]
 print("Number of tasks removed due to missing cost values:", len(tasks_removed))
 
 # Construct the path to save the filtered tasks file
-filtered_tasks_file_path = os.path.join(scripts_dir, '..', 'data', 'filtered', 'tasks_filtered.xlsx')
+filtered_tasks_file_path = os.path.join(scripts_dir, '..', 'data', '1_filtered', 'tasks_filtered.xlsx')
 
 # Save the cleaned datasets if necessary
 tasks_with_costs.to_excel(filtered_tasks_file_path, index=False)
@@ -75,8 +79,8 @@ print("Removed tasks which are not having any costs and saved as tasks_filtered 
 
 # STEP 1.2
 '''
-Calculate the maximum, minimum, mean and variance of each feature. Some features have very low variance 
-(less than 0.01) and will not be useful for learning. Identify and remove those columns from the data.
+Calculate the maximum, minimum, mean, and variance of each feature. Identify and remove columns with variance 
+less than 0.01 from the datasets. Uses the process_features function to print statistics and filter features.
 ''' 
 
 # Read the filtered task file
@@ -117,8 +121,8 @@ tasks_df_reduced = pd.concat([tasks_df['Task ID'], tasks_features_reduced], axis
 suppliers_df_reduced = pd.concat([suppliers_df['Supplier ID'], suppliers_features_reduced], axis=1)
 
 # Construct the path to save the reduced tasks and suppliers files
-reduced_tasks_file_path = os.path.join(scripts_dir, '..', 'data', 'reduced', 'tasks_reduced.xlsx')
-reduced_suppliers_file_path = os.path.join(scripts_dir, '..', 'data', 'reduced', 'suppliers_reduced.csv')
+reduced_tasks_file_path = os.path.join(scripts_dir, '..', 'data', '2_reduced', 'tasks_reduced.xlsx')
+reduced_suppliers_file_path = os.path.join(scripts_dir, '..', 'data', '2_reduced', 'suppliers_reduced.csv')
 
 # Save the updated tasks and suppliers to an Excel file
 tasks_df_reduced.to_excel(reduced_tasks_file_path, index=False)
@@ -128,7 +132,8 @@ print("Features with low variance are removed from tasks and suppliers and are s
 
 # STEP 1.3
 '''
-Features have very different ranges. Scale all features to the range [-1,1] (not the IDs nor the cost!).
+Scales all features (excluding 'Task ID' and 'Supplier ID') in the tasks and suppliers datasets to 
+the range [-1, 1] using `MinMaxScaler` with the `feature_range` parameter. It then saves the scaled datasets.
 ''' 
 
 from sklearn.preprocessing import MinMaxScaler
@@ -159,8 +164,8 @@ tasks_df_scaled = pd.concat([task_ids, task_features_scaled_df], axis=1)
 suppliers_df_scaled = pd.concat([supplier_ids, supplier_features_scaled_df], axis=1)
 
 # Construct the path to save the scaled tasks and suppliers files
-scaled_tasks_file_path = os.path.join(scripts_dir, '..', 'data', 'scaled', 'tasks_scaled.xlsx')
-scaled_suppliers_file_path = os.path.join(scripts_dir, '..', 'data', 'scaled', 'suppliers_scaled.csv')
+scaled_tasks_file_path = os.path.join(scripts_dir, '..', 'data', '3_scaled', 'tasks_scaled.xlsx')
+scaled_suppliers_file_path = os.path.join(scripts_dir, '..', 'data', '3_scaled', 'suppliers_scaled.csv')
 
 # Save the scaled datasets
 tasks_df_scaled.to_excel(scaled_tasks_file_path, index=False)
@@ -170,16 +175,16 @@ print("Features scaled to the range [-1, 1] and scaled datasets saved in scaled 
 
 # STEP 1.4
 '''
-For tasks only, calculate the absolute correlation of all pairs of features and visualize it. One feature at a time, 
-identify which feature is the most correlated with one or more of the others (absolute correlation larger than or 
-equal to 0.8), remove it from the dataset, recalculate the correlations and repeat until all pairs of features 
-have an absolute correlation smaller than 0.8.
+Calculates and visualizes the absolute correlation matrix of features in the tasks dataset using 
+`calculate_absolute_correlation` and `visualize_correlation`. It iteratively removes features with absolute correlations 
+of 0.8 or higher using `remove_highly_correlated_features` until all remaining feature pairs have correlations below 
+the threshold. The correlation matrices before and after feature removal are saved as images.
 ''' 
 
 from PIL import Image
 
 # Read the scaled task file
-scaled_tasks_file_path = os.path.join(scripts_dir, '..', 'data', 'scaled', 'tasks_scaled.xlsx')
+scaled_tasks_file_path = os.path.join(scripts_dir, '..', 'data', '3_scaled', 'tasks_scaled.xlsx')
 tasks_df = pd.read_excel(scaled_tasks_file_path)
 
 # Separate the ID column and the features
@@ -197,7 +202,7 @@ def visualize_correlation(corr_matrix, title, save_path):
     sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', vmin=0, vmax=1)
     plt.title(title)
     plt.tight_layout()
-
+     
     # Save the plot to the specified path
     plt.savefig(save_path)
     plt.close()
@@ -243,8 +248,18 @@ scripts_dir = os.path.dirname(__file__)
 initial_corr_image_path = os.path.join(scripts_dir, '..', 'reports', 'figures', 'initial_correlation_matrix.png')
 final_corr_image_path = os.path.join(scripts_dir, '..', 'reports', 'figures', 'final_correlation_matrix.png')
 
+# Ensure the save directory exists
+save_dir = os.path.join(scripts_dir, '..', 'reports', 'figures')
+if not os.path.exists(save_dir):
+    os.makedirs(save_dir)
+
 # Calculate the initial absolute correlation matrix and visualize it
 initial_corr_matrix = calculate_absolute_correlation(task_features)
+
+# Delete the initial correlation matrix file if it exists
+if os.path.exists(initial_corr_image_path):
+    os.remove(initial_corr_image_path)
+
 visualize_correlation(initial_corr_matrix, "Initial Correlation Matrix", initial_corr_image_path)
 
 # Remove highly correlated features
@@ -252,14 +267,20 @@ reduced_task_features, removed_features = remove_highly_correlated_features(task
 
 # Calculate the final absolute correlation matrix and visualize it
 final_corr_matrix = calculate_absolute_correlation(reduced_task_features)
+
+# Delete the final correlation matrix file if it exists
+if os.path.exists(final_corr_image_path):
+    os.remove(final_corr_image_path)
+
 visualize_correlation(final_corr_matrix, "Final Correlation Matrix", final_corr_image_path)
 
 print("Initial and Final correlation matrixes are saved.")
 
 # STEP 1.5
 '''
-Identify the top 20 suppliers for each task (the ones with the lowest cost). Remove from the data all suppliers 
-that never appear in the top 20 of any task.
+Identifies the top 20 suppliers for each task (based on the lowest cost) and removes suppliers that never appear 
+in the top 20 for any task. Uses `nsmallest` to find the top 20 suppliers and filters the suppliers dataset accordingly.
+Saves the filtered suppliers dataset.
 ''' 
 
 # Load the datasets
@@ -282,7 +303,7 @@ for task_id in costs_df['Task ID'].unique():
 top_suppliers_df = suppliers_df[suppliers_df['Supplier ID'].isin(top_suppliers)]
 
 # Save the filtered suppliers dataset
-top_suppliers_file_path = os.path.join(scripts_dir, '..', 'data', 'topsuppliers', 'Top_20_suppliers.csv')
+top_suppliers_file_path = os.path.join(scripts_dir, '..', 'data', '4_topsuppliers', 'Top_20_suppliers.csv')
 top_suppliers_df.to_csv(top_suppliers_file_path, index=False)
 
 print("Top 20 suppliers dataset saved.")
