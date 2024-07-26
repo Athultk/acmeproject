@@ -4,9 +4,9 @@ import os
 
 # Define the file paths for the datasets
 scripts_dir = os.path.dirname(__file__)
-tasks_file_path = os.path.join(scripts_dir, '..', 'data', 'scaled', 'tasks_scaled.xlsx')
+tasks_file_path = os.path.join(scripts_dir, '..', 'data', '3_scaled', 'tasks_scaled.xlsx')
 costs_file_path = os.path.join(scripts_dir, '..', 'data', 'raw', 'cost.csv')
-suppliers_file_path = os.path.join(scripts_dir, '..', 'data', 'topsuppliers', 'Top_20_suppliers.csv')
+suppliers_file_path = os.path.join(scripts_dir, '..', 'data', '4_topsuppliers', 'Top_20_suppliers.csv')
 
 # Load the datasets
 tasks_df = pd.read_excel(tasks_file_path)

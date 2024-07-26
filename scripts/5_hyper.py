@@ -74,7 +74,7 @@ print(f"Best RMSE: {best_score}")
 # STEP 6
 """
 A random forest regressor which uses parameters: n_estimators, max_depth, min_samples_split, and 
-min_samples_leaf
+min_samples_leaf. Please note that this step is taking almost 3 hours to run.
 
 """
 
